@@ -1,0 +1,22 @@
+1. Filter Data for Australian Users and June 2022
+Extract rows where:
+
+country = 'Australia'
+event_timestamp falls between '2022-06-01' and '2022-06-30'.
+Assume you find:
+
+Total "Start Session" events: 10,000.
+2. Identify "Complete Purchase" Events within 2 Days
+For each user_id:
+
+Check if a "Complete Purchase" event occurred within 2 days (48 hours) after a "Start Session" event.
+Using SQL or Python, you identify:
+
+Total "Complete Purchase" events within 2 days: 2,500.
+3. Calculate the Percentage
+The percentage of Australian users who completed a purchase within 2 days after starting a session is calculated as:
+Percentage
+=(Number of "Complete Purchase" events Number of "Start Session" events)×100Percentage=( Number of "Start Session" events Number of "Complete Purchase" events)×100Substitute the values:
+Percentage=(2,50010,000)×100=25%Percentage=( 10,0002,500)×100=25%
+Final Answer
+25% of Australian users completed a purchase within 2 days after starting a session in June 2022.

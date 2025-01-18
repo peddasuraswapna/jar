@@ -1,0 +1,47 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load the dataset
+data = pd.read_csv("ecommerce_data.csv", parse_dates=["event_timestamp"])
+
+# Filter for Australian users and June 2022
+filtered_data = data[
+    (data["country"] == "Australia") &
+    (data["event_timestamp"].dt.month == 6) &
+    (data["event_timestamp"].dt.year == 2022)
+]
+
+# Separate "Start Session" and "Complete Purchase" events
+start_sessions = filtered_data[filtered_data["event_name"] == "Start Session"]
+complete_purchases = filtered_data[filtered_data["event_name"] == "Complete Purchase"]
+
+# Merge data to find "Complete Purchase" within 2 days of "Start Session"
+start_sessions = start_sessions.rename(columns={"event_timestamp": "start_time"})
+complete_purchases = complete_purchases.rename(columns={"event_timestamp": "purchase_time"})
+
+# Perform a self-join on user_id to find matches within 2 days
+merged_data = pd.merge(start_sessions, complete_purchases, on="user_id")
+merged_data["time_diff"] = (merged_data["purchase_time"] - merged_data["start_time"]).dt.total_seconds() / 3600
+
+# Filter for purchases within 48 hours
+valid_purchases = merged_data[merged_data["time_diff"] <= 48]
+
+# Calculate metrics
+total_start_sessions = start_sessions["user_id"].nunique()
+total_valid_purchases = valid_purchases["user_id"].nunique()
+
+percentage = (total_valid_purchases / total_start_sessions) * 100
+
+# Print results
+print(f"Total Start Sessions: {total_start_sessions}")
+print(f"Total Valid Purchases: {total_valid_purchases}")
+print(f"Percentage: {percentage:.2f}%")
+
+# Plot the results
+labels = ["Start Sessions", "Valid Purchases"]
+values = [total_start_sessions, total_valid_purchases]
+
+plt.bar(labels, values, color=["blue", "green"])
+plt.title("Start Sessions vs Valid Purchases (Australia, June 2022)")
+plt.ylabel("Count")
+plt.show()
